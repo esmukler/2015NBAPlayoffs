@@ -1,0 +1,27 @@
+.group:after {
+  content: "";
+  clear: both;
+  display: block;
+}
+
+a {
+  color: #000;
+  font-weight: bold;
+}
+
+ul {
+  list-style: none;
+  width: 900px;
+}
+
+.player {
+  float: left;
+  width: 300px;
+  text-align: center;
+  position: relative;
+  border-bottom: 1px solid #ccc;
+}
+
+.player p {
+  margin: 5px;
+}
