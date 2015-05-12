@@ -11,17 +11,21 @@ a {
 
 ul {
   list-style: none;
-  width: 900px;
+  width: 1000px;
 }
 
 .player {
   float: left;
-  width: 300px;
+  width: 500px;
   text-align: center;
   position: relative;
   border-bottom: 1px solid #ccc;
 }
 
 .player p {
-  margin: 5px;
+  margin: 5px auto;
+}
+
+.mins, .pts {
+  width: 200px;
 }

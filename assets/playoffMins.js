@@ -17,31 +17,6 @@ function PlayoffMins() {
     })
   };
 
-  self.populate = function(data) {
-    var $list = $(".player-list");
-    $list.empty();
-    var id = 0;
-    data.forEach( function(player) {
-      $list.append("<li class='player' id=" + id + "><a target='_blank' href='" +
-        player.Name.href + "'>" + player.Name.text + "</a>" +
-        " (<a target='_blank' href='" + player.Team.href + "'>" +
-        player.Team.text + "</a>)</li>");
-
-      var $li = $("#" + id);
-      $li.append("<p>MP: " + player.MinutesPlayed + "</p>");
-      $li.append("<p>TP: " + player.Points + "</p>");
-
-
-      var lineHeight = parseInt(player.MinutesPlayed) / 4;
-      lineHeight = lineHeight > 1 ? lineHeight : 1;
-
-      var colors = self.TEAM_COLORS[player.Team.text] || ["#CCCCCC", "#000000"];
-
-      self.makeCircle(id, lineHeight, colors);
-      id += 1;
-    })
-  };
-
   self.TEAM_COLORS = {
     "ATL" : ["#FF0000", "#000080", "#C0C0C0"],
     "CHI" : ["#D4001F", "#000000"],
@@ -53,22 +28,65 @@ function PlayoffMins() {
     "WAS" : ["#002B5C", "#E31837", "#C4CDD4"]
   }
 
-  self.makeCircle = function(id, lineHeight, colors) {
+  self.populate = function(data) {
+    var $list = $(".player-list");
+    $list.empty();
+    var id = 0;
+    data.forEach( function(player) {
+      $list.append("<li class='player' id=" + id + "><a target='_blank' href='" +
+        player.Name.href + "'>" + player.Name.text + "</a>" +
+        " (<a target='_blank' href='" + player.Team.href + "'>" +
+        player.Team.text + "</a>)</li>");
+
+      var $li = $("#" + id);
+      var playerMins = parseInt(player.MinutesPlayed);
+      var playerPts = parseInt(player.Points);
+      var colors = self.TEAM_COLORS[player.Team.text] || ["#CCCCCC", "#AAAAAA"];
+
+      var minBorder = "solid 2px " + colors[0];
+      var ptsBorder = "solid 2px " + colors[1];
+
+
+      $li.append("<p class='mins'>MP: " + playerMins + "</p>");
+      $li.find('.mins').css("border", minBorder);
+      $li.append("<p class='pts'>TP: " + player.Points + "</p>");
+      $li.find('.pts').css("border",ptsBorder);
+
+
+      var minsRadius = Math.sqrt(playerMins) * 5;
+      var ptsRadius = Math.sqrt(playerPts) * 5;
+
+      if (playerMins < playerPts) {
+        console.log(player.Name.text, playerMins, playerPts)
+      }
+
+
+      self.makeCircle(id, minsRadius, colors, "mins");
+      self.makeCircle(id, ptsRadius, colors, "pts");
+      id += 1;
+    })
+  };
+
+
+
+  self.makeCircle = function(id, radius, colors, stat) {
+    var statIdx = stat === "mins" ? 0 : 1;
     var $element = $("#" + id);
-    $element.append("<canvas width='300' height='250'></canvas>");
+    if (statIdx === 0) {
+      $element.append("<canvas width='300' height='250'></canvas>");
+    }
     var canvas = $("#" + id + " canvas")[0];
     var context = canvas.getContext('2d');
     var centerX = canvas.width / 2;
     var centerY = canvas.height / 2;
-    var radius = lineHeight;
 
     context.beginPath();
     context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-    context.fillStyle = colors[0];
+    context.fillStyle = colors[statIdx];
     context.fill();
     context.lineWidth = 5;
-    context.strokeStyle = colors[1];
-    context.stroke();
+    // context.strokeStyle = colors[(statIdx-1)*-1];
+    // context.stroke();
   }
 
   self.fetch();
