@@ -21,6 +21,8 @@ main {
   background: #FCD595;
   border-radius: 10px;
   font-family: "Gill Sans";
+  margin: 0 10px;
+  padding: 5px;
 }
 
 .filters {
