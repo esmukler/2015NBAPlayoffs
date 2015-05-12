@@ -3,6 +3,7 @@ function PlayoffMins() {
 
   self.allPlayers = null;
   self.currentPlayers = null;
+  self.maxMins = 400;
   self.currentStat = "mins";
   self.activeTeams = ["ATL", "CHI", "CLE", "GSW",
                       "HOU", "LAC", "MEM", "WAS"];
@@ -39,6 +40,7 @@ function PlayoffMins() {
         })
         self.allPlayers = results;
         self.currentPlayers = results;
+        self.maxMins = parseInt(results[0].MinutesPlayed);
         self.populate(results);
       }
     })
@@ -48,6 +50,7 @@ function PlayoffMins() {
     var $list = $(".player-list");
     $list.empty();
     var id = 0;
+
     data.forEach( function(player) {
       $list.append("<li class='player' id=" + id + "><a target='_blank' href='" +
         player.Name.href + "'>" + player.Name.text + "</a>" +
@@ -65,9 +68,11 @@ function PlayoffMins() {
       $li.append("<p class='pts'>TP: " + player.Points + "</p>");
       $li.find('.pts').css("border","solid 2px " + colors[1]);
 
+      // Circle radii adjusted so largest possible circle never too big
+      var radiiConstant = 125 / Math.sqrt(self.maxMins);
 
-      var minsRadius = Math.sqrt(playerMins) * 5;
-      var ptsRadius = Math.sqrt(playerPts) * 5;
+      var minsRadius = Math.sqrt(playerMins) * radiiConstant;
+      var ptsRadius = Math.sqrt(playerPts) * radiiConstant;
 
       self.makeCircle(id, minsRadius, colors, "mins");
       self.makeCircle(id, ptsRadius, colors, "pts");
@@ -118,13 +123,12 @@ function PlayoffMins() {
     $("select.statSort").change(function(event) {
       var stat = event.target.value === "mins" ? "MinutesPlayed" : "Points";
 
-      if (stat !== self.currentStat) {
-        self.currentPlayers = self.currentPlayers.sort(function(a,b) {
-          return parseInt(b[stat]) - parseInt(a[stat]);
-        })
+      self.currentPlayers = self.currentPlayers.sort(function(a,b) {
+        return parseInt(b[stat]) - parseInt(a[stat]);
+      })
 
-        self.populate(self.currentPlayers)
-        self.currentStat = stat;
+      self.populate(self.currentPlayers)
+      self.currentStat = stat;
       }
     })
   };
@@ -132,7 +136,6 @@ function PlayoffMins() {
   self.fetch();
   self.filterByTeam();
   self.sortByStat();
-
 };
 
 PlayoffMins();
