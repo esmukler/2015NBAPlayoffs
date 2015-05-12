@@ -3,7 +3,28 @@ function PlayoffMins() {
 
   self.allPlayers = null;
   self.currentPlayers = null;
-  self.stat = "mins";
+  self.currentStat = "mins";
+  self.activeTeams = ["ATL", "CHI", "CLE", "GSW",
+                      "HOU", "LAC", "MEM", "WAS"];
+
+  self.TEAM_COLORS = {
+    "ATL" : ["#FF0000", "#000080", "#C0C0C0"],
+    "BOS" : ["#009E60", "#000000"],
+    "BRK" : ["#000000", "#FFFFFF"],
+    "CHI" : ["#D4001F", "#000000"],
+    "CLE" : ["#860038", "#FDBB30", "#002D62"],
+    "DAL" : ["#0b60AD", "#072156", "#A9A9A9"],
+    "GSW" : ["#04529C", "#FFCC33"],
+    "HOU" : ["#CE1138", "#CCCCCC", "#000000"],
+    "LAC" : ["#EE2944", "#146AA2"],
+    "MEM" : ["#001F70", "#7399C6", "#BED4E9", "#FDB927"],
+    "MIL" : ["#003614", "#E32636", "#C0C0C0"],
+    "NOP" : ["#002B5C", "#B4975A", "#E31836"],
+    "POR" : ["#F0163A", "#B6BFBF", "#000000"],
+    "SAS" : ["#000000", "#BEC8C9"],
+    "TOR" : ["#B31B1B", "#000000", "#708090"],
+    "WAS" : ["#002B5C", "#E31837", "#C4CDD4"]
+  };
 
   self.fetch = function() {
     $.ajax({
@@ -11,7 +32,7 @@ function PlayoffMins() {
       crossDomain: true,
       dataType: "jsonp",
       success: function (data) {
-        $(".update").html(data.thisversionrun.slice(0, -14));
+        $(".update").html(data.thisversionrun.slice(0, -23));
         var results = data["results"]["collection1"];
         results = results.sort(function(a,b) {
           return parseInt(b["MinutesPlayed"]) - parseInt(a["MinutesPlayed"]);
@@ -22,17 +43,6 @@ function PlayoffMins() {
       }
     })
   };
-
-  self.TEAM_COLORS = {
-    "ATL" : ["#FF0000", "#000080", "#C0C0C0"],
-    "CHI" : ["#D4001F", "#000000"],
-    "CLE" : ["#860038", "#FDBB30", "#002D62"],
-    "GSW" : ["#04529C", "#FFCC33"],
-    "HOU" : ["#CE1138", "#CCCCCC", "#000000"],
-    "LAC" : ["#EE2944", "#146AA2"],
-    "MEM" : ["#001F70", "#7399C6", "#BED4E9", "#FDB927"],
-    "WAS" : ["#002B5C", "#E31837", "#C4CDD4"]
-  }
 
   self.populate = function(data) {
     var $list = $(".player-list");
@@ -49,14 +59,11 @@ function PlayoffMins() {
       var playerPts = parseInt(player.Points);
       var colors = self.TEAM_COLORS[player.Team.text] || ["#CCCCCC", "#AAAAAA"];
 
-      var minBorder = "solid 2px " + colors[0];
-      var ptsBorder = "solid 2px " + colors[1];
-
-
       $li.append("<p class='mins'>MP: " + playerMins + "</p>");
-      $li.find('.mins').css("border", minBorder);
+      $li.find('.mins').css("border", "solid 2px " + colors[0]);
+
       $li.append("<p class='pts'>TP: " + player.Points + "</p>");
-      $li.find('.pts').css("border",ptsBorder);
+      $li.find('.pts').css("border","solid 2px " + colors[1]);
 
 
       var minsRadius = Math.sqrt(playerMins) * 5;
@@ -84,8 +91,6 @@ function PlayoffMins() {
     context.fillStyle = colors[statIdx];
     context.fill();
     context.lineWidth = 5;
-    // context.strokeStyle = colors[(statIdx-1)*-1];
-    // context.stroke();
   };
 
   self.filterByTeam = function() {
@@ -93,6 +98,12 @@ function PlayoffMins() {
       var team = event.target.value;
       if (team === "all") {
         self.populate(self.allPlayers)
+      } else if (team === "active") {
+        var filteredPlayers = self.allPlayers.filter(function(player) {
+          return self.activeTeams.indexOf(player.Team.text) !== -1;
+        })
+        self.currentPlayers = filteredPlayers;
+        self.populate(filteredPlayers)
       } else {
         var filteredPlayers = self.allPlayers.filter(function(player) {
           return player.Team.text === team;
@@ -106,18 +117,17 @@ function PlayoffMins() {
   self.sortByStat = function() {
     $("select.statSort").change(function(event) {
       var stat = event.target.value === "mins" ? "MinutesPlayed" : "Points";
-      if (stat !== self.stat) {
-        console.log("change to: " + stat);
+
+      if (stat !== self.currentStat) {
         self.currentPlayers = self.currentPlayers.sort(function(a,b) {
           return parseInt(b[stat]) - parseInt(a[stat]);
         })
 
         self.populate(self.currentPlayers)
-        self.stat = stat;
+        self.currentStat = stat;
       }
-
     })
-  }
+  };
 
   self.fetch();
   self.filterByTeam();
