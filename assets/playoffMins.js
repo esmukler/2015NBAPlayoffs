@@ -1,6 +1,8 @@
 function PlayoffMins() {
   var self = this;
 
+  self.allPlayers = null;
+
   self.fetch = function() {
     $.ajax({
       url: "https://www.kimonolabs.com/api/9eduwfmk?apikey=iI1r2CpfHwa772QYj6oPpLkq0ixGD8Oy",
@@ -12,6 +14,7 @@ function PlayoffMins() {
         results = results.sort(function(a,b) {
           return parseInt(b["MinutesPlayed"]) - parseInt(a["MinutesPlayed"]);
         })
+        self.allPlayers = self.allPlayers || results;
         self.populate(results);
       }
     })
@@ -56,18 +59,11 @@ function PlayoffMins() {
       var minsRadius = Math.sqrt(playerMins) * 5;
       var ptsRadius = Math.sqrt(playerPts) * 5;
 
-      if (playerMins < playerPts) {
-        console.log(player.Name.text, playerMins, playerPts)
-      }
-
-
       self.makeCircle(id, minsRadius, colors, "mins");
       self.makeCircle(id, ptsRadius, colors, "pts");
       id += 1;
     })
   };
-
-
 
   self.makeCircle = function(id, radius, colors, stat) {
     var statIdx = stat === "mins" ? 0 : 1;
@@ -87,9 +83,24 @@ function PlayoffMins() {
     context.lineWidth = 5;
     // context.strokeStyle = colors[(statIdx-1)*-1];
     // context.stroke();
-  }
+  };
+
+  self.filterByTeam = function() {
+    $("select").change(function(event) {
+      var team = event.target.value;
+      if (team === "all") {
+        self.populate(self.allPlayers)
+      } else {
+        var filteredPlayers = self.allPlayers.filter(function(player) {
+          return player.Team.text === team;
+        })
+        self.populate(filteredPlayers)
+      }
+    });
+  };
 
   self.fetch();
+  self.filterByTeam();
 
 };
 
