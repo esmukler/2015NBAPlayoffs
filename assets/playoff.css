@@ -11,12 +11,12 @@ a {
 
 ul {
   list-style: none;
-  width: 1000px;
+  width: 900px;
 }
 
 .player {
   float: left;
-  width: 500px;
+  width: 300px;
   text-align: center;
   position: relative;
   border-bottom: 1px solid #ccc;
