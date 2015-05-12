@@ -129,7 +129,6 @@ function PlayoffMins() {
 
       self.populate(self.currentPlayers)
       self.currentStat = stat;
-      }
     })
   };
 
