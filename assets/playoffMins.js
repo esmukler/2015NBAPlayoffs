@@ -2,6 +2,8 @@ function PlayoffMins() {
   var self = this;
 
   self.allPlayers = null;
+  self.currentPlayers = null;
+  self.stat = "mins";
 
   self.fetch = function() {
     $.ajax({
@@ -14,7 +16,8 @@ function PlayoffMins() {
         results = results.sort(function(a,b) {
           return parseInt(b["MinutesPlayed"]) - parseInt(a["MinutesPlayed"]);
         })
-        self.allPlayers = self.allPlayers || results;
+        self.allPlayers = results;
+        self.currentPlayers = results;
         self.populate(results);
       }
     })
@@ -86,7 +89,7 @@ function PlayoffMins() {
   };
 
   self.filterByTeam = function() {
-    $("select").change(function(event) {
+    $("select.teamFilter").change(function(event) {
       var team = event.target.value;
       if (team === "all") {
         self.populate(self.allPlayers)
@@ -94,13 +97,31 @@ function PlayoffMins() {
         var filteredPlayers = self.allPlayers.filter(function(player) {
           return player.Team.text === team;
         })
+        self.currentPlayers = filteredPlayers;
         self.populate(filteredPlayers)
       }
     });
   };
 
+  self.sortByStat = function() {
+    $("select.statSort").change(function(event) {
+      var stat = event.target.value === "mins" ? "MinutesPlayed" : "Points";
+      if (stat !== self.stat) {
+        console.log("change to: " + stat);
+        self.currentPlayers = self.currentPlayers.sort(function(a,b) {
+          return parseInt(b[stat]) - parseInt(a[stat]);
+        })
+
+        self.populate(self.currentPlayers)
+        self.stat = stat;
+      }
+
+    })
+  }
+
   self.fetch();
   self.filterByTeam();
+  self.sortByStat();
 
 };
 

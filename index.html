@@ -2,22 +2,23 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>2015 NBA Playoff Minutes</title>
+    <title>2015 NBA Playoff Points and Minutes</title>
     <link rel="stylesheet" type="text/css" href="assets/playoff.css">
   </head>
   <body>
     <main>
-      <h1>2015 NBA Playoff Minutes</h1>
+      <h1>2015 NBA Playoff Points and Minutes</h1>
       <div class="subtitles">
-        <p>Designed by Eli Smukler</p>
+        <p>Designed by <a href="http://www.elismukler.com">Eli Smukler</a></p>
         <p>Data courtesy of <a target="_blank"
           href="http://www.basketball-reference.com/playoffs/NBA_2015.html">
           Basketball-Reference.com</a>
         </p>
         <p>Last Updated: <span class="update"></span></p>
       </div>
-      <div class="filter">
-        <label>Filter by Team:
+
+      <div class="filters">
+        <label class="team">Filter by Team:
           <select class="teamFilter">
             <option value="all" selected>All Playoff Teams</option>
             <option value="ATL">Atlanta Hawks</option>
@@ -30,7 +31,15 @@
             <option value="WAS">Washington Wizards</option>
           </select>
         </label>
+
+        <label>Sort by Stat:
+          <select class="statSort">
+            <option value="mins">Total Minutes Played</option>
+            <option value="pts">Total Points</option>
+          </select>
+        </label>
       </div>
+      
       <ul class="player-list group"></ul>
     </main>
 
