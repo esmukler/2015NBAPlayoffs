@@ -5,7 +5,7 @@ function PlayoffMins() {
   self.currentPlayers = null;
   self.maxMins = 400;
   self.currentStat = "mins";
-  self.activeTeams = ["ATL", "CLE", "GSW", "HOU"];
+  self.activeTeams = [CLE", "GSW"];
 
   self.TEAM_COLORS = {
     "ATL" : ["#FF0000", "#000080", "#C0C0C0"],
